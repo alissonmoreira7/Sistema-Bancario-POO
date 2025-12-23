@@ -1,6 +1,6 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
-'''from utilitarios.exceptions import SaldoInsuficienteError'''
+from utilitarios.exceptions import SaldoInsuficienteError
 
 class Conta:
     _total_contas=0
@@ -45,3 +45,25 @@ class Conta:
         for data, transacao in self._historico:
             print(f'- {data.strftime('%d/%m/%Y %H:%M:%S')}: {transacao}')  
         print('-------------------------------------\n')
+
+class ContaCorrente(Conta):
+    def __init__(self, numero: int, cliente, limite: float = 500.0):
+        super().__init__(numero, cliente)
+        self.limite = limite
+
+    def sacar(self, valor: float):
+        if valor<=0:
+            print('Valor de saque inválido!')
+            return
+    
+        saldo_disponivel = self._saldo + self.limite
+
+        if valor > saldo_disponivel:
+            raise SaldoInsuficienteError(saldo_disponivel, valor, "Saldo e limite insuficientes.")
+        
+        self._saldo -= valor
+
+        self._historico.append((datetime.now(), f"Saque de R${valor:.2f}"))
+        print(f"Saque de R${valor:.2f} realizado com sucesso.")
+
+    
