@@ -1,8 +1,8 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 from utilitarios.exceptions import SaldoInsuficienteError
 
-class Conta:
+class Conta(ABC):
     _total_contas=0
     def __init__(self, numero: int, cliente):
         self._numero = numero
@@ -29,7 +29,7 @@ class Conta:
         else:
             print('Valor de depósito inválido!')
 
-    @abstractclassmethod
+    @abstractmethod
     def sacar(self, valor: float):
         pass
 
@@ -48,8 +48,9 @@ class Conta:
 
 class ContaCorrente(Conta):
     def __init__(self, numero: int, cliente, limite: float = 500.0):
-        super().__init__(numero, cliente)
         self.limite = limite
+        super().__init__(numero, cliente)
+        
 
     def sacar(self, valor: float):
         if valor<=0:
@@ -66,4 +67,19 @@ class ContaCorrente(Conta):
         self._historico.append((datetime.now(), f"Saque de R${valor:.2f}"))
         print(f"Saque de R${valor:.2f} realizado com sucesso.")
 
-    
+class ContaPoupanca(Conta):
+    def __init__(self, numero: int, cliente):
+        super().__init__(numero, cliente)
+
+    def sacar(self, valor: float):
+        if valor <= 0:
+            print("Valor de saque inválido.")
+            return
+
+        if valor > self._saldo:
+            raise SaldoInsuficienteError(self._saldo, valor)
+            
+        self._saldo -= valor
+      
+        self._historico.append((datetime.now(), f"Saque de R${valor:.2f}"))
+        print(f"Saque de R${valor:.2f} realizado com sucesso.")
