@@ -1,6 +1,6 @@
 from entidades.cliente import Cliente
 from entidades.conta import Conta, ContaCorrente, ContaPoupanca
-from utilitarios.exceptions import ContaInexistenteError
+from utilitarios.exceptions import ContaInexistente
 
 class Banco:
     def __init__(self, nome: str):
@@ -8,7 +8,7 @@ class Banco:
         self._clientes = {}
         self._contas = {}
 
-    def adicionar_cliente(self, nome:str, cpf: str):
+    def adicionar_cliente(self, nome:str, cpf: str): 
         if cpf in self._clientes:
             print('Erro: Já existe um cliente com este CPF!')
             return self._clientes[cpf]
@@ -25,17 +25,26 @@ class Banco:
 
         if tipo.lower() == 'corrente':
             nova_conta = ContaCorrente(numero_conta, cliente)
+            
 
         elif tipo.lower() == 'poupanca':
             nova_conta = ContaPoupanca(numero_conta, cliente)
+            
 
         else:
             print('Tipo de conta inválido. Escolha "corrente" ou "poupanca".')
             return None
         
+        self._contas[numero_conta] = nova_conta
+
+        cliente.adicionar_conta(nova_conta)
+        print(f"Conta {tipo} nº {numero_conta} criada para o cliente {cliente.nome}.")
+
+        return nova_conta
+        
     def buscar_conta(self, numero_conta: int) -> Conta:
         conta = self._contas.get(numero_conta)
 
         if not conta:
-            raise ContaInexistenteError(numero_conta)
+            raise ContaInexistente(numero_conta)
         return conta

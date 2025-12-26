@@ -33,7 +33,7 @@ class Conta(ABC):
     def sacar(self, valor: float):
         pass
 
-    def extratro(self):
+    def extrato(self):
         print(f'\n---Extrato da conta N° {self._numero} ---')
         print(f'Cliente: {self._cliente.nome}')
         print(f'Saldo atual: R${self.saldo:.2f}')
